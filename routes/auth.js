@@ -14,6 +14,13 @@ router.get("/session", (req, res) => {
   }
 });
 
+router.get("/logout", (req, res) => {
+  req.logout();
+  req.session.save((err) => {
+    if (err) throw err;
+    res.send("SUCCESS_LOGOUT");
+  });
+});
 // router.get("/check", async (req, res) => {
 //   const _url = req.url;
 //   const queryData = url.parse(_url, true).query;

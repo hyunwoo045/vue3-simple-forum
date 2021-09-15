@@ -183,9 +183,9 @@ export default {
             this.$router.push("/login");
           }
           this.$http
-            .get(`${endpoint}/comment?id=${this.contentId}`)
-            .then((response) => {
-              this.comments = response.data;
+            .get(`${endpoint}/comment?id=${this.content.id}`)
+            .then((innerResponse) => {
+              this.comments = innerResponse.data;
             });
           this.commentDescription = "";
         });
@@ -195,7 +195,6 @@ export default {
         alert("삭제 권한이 없습니다.");
         return;
       }
-
       if (confirm("댓글을 정말 삭제하시겠습니까?") === true) {
         this.$http
           .post(`${endpoint}/comment/delete`, {
@@ -207,7 +206,7 @@ export default {
               this.$router.push("/login");
             }
             this.$http
-              .get(`${endpoint}/comment?id=${this.contentId}`)
+              .get(`${endpoint}/comment?id=${this.content.id}`)
               .then((response) => {
                 this.comments = response.data;
               });

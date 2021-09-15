@@ -10,12 +10,18 @@
 </template>
 
 <script>
+import config from "~/key/config";
+const endpoint = config.endpoint;
+
 export default {
   methods: {
     logoutHandler() {
       if (confirm("로그아웃 하시겠습니까?")) {
-        this.$store.commit("user/resetState");
-        this.$router.push("/login");
+        this.$http.get(`${endpoint}/auth/logout`).then((res) => {
+          console.log(res.data);
+          this.$store.commit("user/resetState");
+          this.$router.push("/login");
+        });
       }
       return;
     },
