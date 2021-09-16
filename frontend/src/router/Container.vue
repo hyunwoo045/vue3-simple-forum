@@ -87,7 +87,8 @@ export default {
             alert("로그인 후 이용해주세요");
             this.$router.push("/login");
           }
-          this.contents = response.data;
+          this.contents = response.data.contents;
+          this.maxPageNumber = Math.ceil(response.data.length / 10);
         });
     }
   },

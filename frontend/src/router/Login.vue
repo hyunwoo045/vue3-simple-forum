@@ -5,7 +5,9 @@
       <a href="http://localhost:3000/api/auth_social/google">
         <div class="btn">GOOGLE 로 로그인</div>
       </a>
-      <div class="btn">KAKAO 로 로그인</div>
+      <a href="http://localhost:3000/api/auth_social/kakao">
+        <div class="btn">KAKAO 로 로그인</div>
+      </a>
     </div>
   </div>
 </template>

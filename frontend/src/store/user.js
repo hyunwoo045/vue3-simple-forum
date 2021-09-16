@@ -29,8 +29,6 @@ export default {
       state.provider = "";
       state.identifier = "";
       state.isLoggedIn = false;
-      // localStorage.removeItem("accessToken");
-      // localStorage.removeItem("refreshToken");
     },
     sessionCheck(state) {
       console.log("SESSION CHECKING");
@@ -50,64 +48,4 @@ export default {
       });
     },
   },
-  // actions: {
-  //   async AccessTokenHandler({ commit }) {
-  //     try {
-  //       const payload = await verifyAccessToken();
-  //       commit("setState", payload);
-  //       return "OK";
-  //     } catch (err) {
-  //       return err;
-  //     }
-  //   },
-  //   async RefreshTokenHandler({ commit }) {
-  //     try {
-  //       const payload = await verifyRefreshToken();
-  //       commit("setState", payload);
-  //       return "OK";
-  //     } catch (err) {
-  //       return err;
-  //     }
-  //   },
-  // },
 };
-
-// function verifyAccessToken() {
-//   return new Promise((resolve, reject) => {
-//     const token = localStorage.getItem("accessToken");
-//     if (!token) {
-//       reject("NEED_LOGIN");
-//     } else {
-//       axios.get(`${endpoint}/auth/check?token=${token}`).then((res) => {
-//         const data = res.data;
-//         if (data.message === "VALID_TOKEN") {
-//           localStorage.setItem("accessToken", data.accessToken);
-//           localStorage.setItem("refreshToken", data.refreshToken);
-//           resolve(data.payload);
-//         } else {
-//           reject("NOT_VALID_ACCESS_TOKEN");
-//         }
-//       });
-//     }
-//   });
-// }
-
-// function verifyRefreshToken() {
-//   return new Promise((resolve, reject) => {
-//     const token = localStorage.getItem("refreshToken");
-//     if (!token) {
-//       reject("NEED_LOGIN");
-//     } else {
-//       axios.get(`${endpoint}/auth/check_refresh?token=${token}`).then((res) => {
-//         const data = res.data;
-//         if (data.message === "VALID_REFRESH_TOKEN") {
-//           localStorage.setItem("accessToken", data.accessToken);
-//           localStorage.setItem("refreshToken", data.refreshToken);
-//           resolve(data.payload);
-//         } else {
-//           reject("NOT_VALID_REFRESH_TOKEN");
-//         }
-//       });
-//     }
-//   });
-// }

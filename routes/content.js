@@ -136,8 +136,17 @@ router.get("/get_by_author", authenticateUser, function (req, res) {
     [user_id],
     (err, contents) => {
       if (err) throw err;
-      connection.end();
-      res.send(contents);
+      connection.query(
+        "SELECT COUNT(*) AS length FROM contents WHERE user_id=?",
+        [user_id],
+        (err, contentCnt) => {
+          connection.end();
+          res.send({
+            length: contentCnt[0].length,
+            contents,
+          });
+        }
+      );
     }
   );
 });
