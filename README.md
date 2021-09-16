@@ -1052,11 +1052,11 @@ passport.use(
 );
 ```
 
-마지막에 콜백함수의 네 번째 인자인 done 함수를 실행 시켰습니다. done 메서드는 기본적으로 2개의 인자를 담습니다.<br/>
+마지막에 콜백함수의 네 번째 인자인 done 함수를 반환하였습니다. done 메서드는 기본적으로 2개의 인자를 담습니다.<br/>
 `done(err, user)`<br/>
 첫 번째 인자는 err 를 담아주고, 두 번째 인자에 유저 정보를 담아줍니다. err의 경우 보통 localStrategy 를 사용할 때 잘못된 로그인 정보를 입력받았을 경우의 error 핸들링을 하는 부분이라고 생각하면 됩니다. 저는 외부 사이트의 로그인 strategy 를 가져왔기 때문에 특별한 경우가 아니라면 error 에 대한 로직을 구현할 필요는 없었습니다. 따라서 `null` 로 할당해주었고, profile 의 내용을 모두 담기엔 제 사이트에서 사용하지 않는 불필요한 정보가 많이 있고 세션에 부담이 될 수 있으므로 필요한 정보만 객체에 담아 두 번째 인자로 할당해주었습니다.
 
-다음으로 session에 대해 알아보겠습니다.
+다음으로 `serializeUser()`가 실행됩니다. `serializeUser()`와 `deserializeUser()`를 함께 살펴보게 되는데, 이 두 함수는 모두 세션에 관련한 기능을 수행합니다.
 
 ```javascript
 passport.serializeUser((user, done) => {
@@ -1068,9 +1068,9 @@ passport.deserializeUser((user, done) => {
 ```
 
 - `serializeUser`: 최초 로그인 시 (브라우저에 session이 없을 경우) 실행되는 함수입니다. 브라우저의 고유 session id 에 해당하는 session 정보를 서버에 생성하고 전달받은 user 정보를 생성하여 저장합니다.
-- `deserializeUser`: 로그인 후 서버에 api 요청이 있을 때 마다 실행되는 함수 입니다. 해당 session id에 저장되어 있는 user 정보를 `req.session.user` 에 해당하는 정보를 서버에 요청이 있을 때 마다 저장합니다.
+- `deserializeUser`: 로그인 후 서버에 api 요청이 있을 때 마다 실행되는 함수 입니다. 해당 session id에 저장되어 있는 user 정보를 `req.user` 에 저장합니다.
 
-이를 활용하기 위해서 `express-session` 을 설치하였습니다. 또한 세션 정보를 MySQL에 저장하기 위해 `express-mysql-session` 또한 설치했죠. 등록해 줍시다.
+이 두 함수가 로그인 세션 유지의 핵심적인 기능을 담당하고, 당연하게도 session 을 이용해야 합니다. 이를 활용하기 위해서 `express-session` 을 설치하였습니다. 또한 세션 정보를 MySQL에 저장하기 위해 `express-mysql-session` 또한 설치했습니다. 등록해 주겠습니다.
 
 ```javascript
 const session = require("express-session");
@@ -1182,7 +1182,7 @@ passport.serializeUser((user, done) => {
 ```pm
 0|www    | SERIALIZED {
 0|www    |   id: 11,
-0|www    |   identifier: '구글 고유식별번호',
+0|www    |   identifier: ':D',
 0|www    |   provider: 'google',
 0|www    |   displayName: 'G-김현우'
 0|www    | }
@@ -1230,28 +1230,11 @@ router.get("/content", authenticateUser, (req, res) => {
 });
 ```
 
-지금까지 passport 의 기본 사용법을 기록하였고, 동작 흐름을 실제로 디버깅을 통해 확인해보았습니다. 아래는 클라이언트 측에서의 활용법을 더 기술해보겠습니다.
+<br/>
 
-첫 째로, 로그인 한 유저만 페이지의 정보를 열람할 수 있게 하고 싶습니다. 위에서 이미 서버사이드의 기능을 구현하였습니다.
+지금까지 passport 의 기본 사용법을 기록하였고, 동작 흐름을 실제로 디버깅을 통해 확인해보았습니다. 아래는 클라이언트 측에서의 활용법을 조금 더 작성해보겠습니다.
 
-```javascript
-/* 세션이 유효한지 판단하는 기능 */
-const authenticateUser = (req, res, next) => {
-  // req.user 정보가 있으면 요청에 대한 처리를 함
-  // 없다면 세션이 만료되었다는 (혹은 없다는) 메세지를 되돌려 보냄.
-  if (req.user) {
-    next();
-  } else {
-    res.send("SESSION_EXPIRED");
-  }
-};
-
-router.get("/content", authenticateUser, (req, res) => {
-  res.send("글 목록!");
-});
-```
-
-세션이 유효하지 않다면 `SESSION_EXPIRED` 메시지를 보내도록 하였습니다. 그렇다면 글 목록을 요청하는 클라이언트의 코드에 아주 간단히 SESSION_EXPIRED 를 받았을 때에 대한 처리를 해주면 됩니다.
+첫 째로, 로그인 한 유저만 페이지의 정보를 열람할 수 있게 하고 싶습니다. 위에서 이미 서버사이드의 기능을 구현하였습니다. 세션이 유효하지 않다면 `SESSION_EXPIRED` 메시지를 보내도록 하였습니다. 그렇다면 글 목록을 요청하는 클라이언트의 코드에 아주 간단히 SESSION_EXPIRED 를 받았을 때에 대한 처리를 해주면 됩니다.
 
 ```javascript
 this.$http.get(`${endpoint}/content`).then((response) => {
