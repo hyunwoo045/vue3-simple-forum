@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/session", (req, res) => {
-  console.log(req.user);
+  console.log("SESSION CHECK", req.user.id);
   if (req.user) {
     const { id, identifier, provider, displayName } = req.user;
     res.send({ id, identifier, provider, displayName });

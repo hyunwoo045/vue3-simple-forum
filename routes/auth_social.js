@@ -12,19 +12,14 @@ router.get(
     successRedirect: `${endpoint}`,
     failureRedirect: `${endpoint}login`,
   })
-  // (request, response) => {
-  //   response.redirect(`${endpoint}`);
-  // }
 );
 
 router.get(
   "/kakao/callback",
   passport.authenticate("kakao", {
+    successRedirect: `${endpoint}`,
     failureRedirect: `${endpoint}login`,
-  }),
-  (request, response) => {
-    response.redirect(`${endpoint}`);
-  }
+  })
 );
 
 module.exports = router;

@@ -21,12 +21,11 @@ router.get("/", authenticateUser, (req, res) => {
   let _url = req.url;
   let queryData = url.parse(_url, true).query;
   let id = queryData.id;
-
   connection.query(
     "SELECT comments.id, user_id, user.nickname AS author, description, created FROM comments LEFT JOIN user ON user_id=user.id WHERE content_id=?",
     [id],
     (err, comments) => {
-      if (err) throw err;
+      if (err) console.error(err);
       connection.end();
       res.send(comments);
     }

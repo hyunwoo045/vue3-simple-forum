@@ -23,11 +23,16 @@ router.get("/", authenticateUser, (req, res) => {
     connection.query(
       "SELECT contents.id, user_id, user.nickname AS author, title, description, created, updated, type, md_text FROM contents LEFT JOIN user ON user_id = user.id ORDER BY created DESC LIMIT 0, 10;",
       (err, topics) => {
-        if (err) throw err;
+        if (err) console.error(err);
         connection.query(
           "SELECT COUNT(*) AS length FROM contents",
           (err, contentCnt) => {
+            if (err) console.error(err);
             connection.end();
+            console.log(
+              "Successfully got all contents - total counts: ",
+              contentCnt[0].length
+            );
             res.send({
               length: contentCnt[0].length,
               topics,
@@ -43,8 +48,9 @@ router.get("/", authenticateUser, (req, res) => {
       "SELECT contents.id, user_id, user.nickname AS author, title, description, created, updated, type, md_text FROM contents LEFT JOIN user ON user_id = user.id WHERE contents.id=? ORDER BY created DESC LIMIT 0, 10;",
       [id],
       (err, topics) => {
-        if (err) throw err;
+        if (err) console.error(err);
         connection.end();
+        console.log("Successfully got contents by id -", id);
         res.send(topics);
       }
     );
@@ -66,8 +72,9 @@ router.get("/page", authenticateUser, (req, res) => {
     "SELECT contents.id, user_id, user.nickname AS author, title, description, created, updated FROM contents LEFT JOIN user ON user_id = user.id ORDER BY created DESC LIMIT ?, 10;",
     [startIndex],
     (err, contents) => {
-      if (err) throw err;
+      if (err) console.error(err);
       connection.end();
+      console.log(`${startIndex}~${startIndex + 10}`);
       res.send(contents);
     }
   );
@@ -85,8 +92,9 @@ router.post("/create", authenticateUser, function (req, res) {
     "INSERT INTO contents (title, description, user_id, created, updated, type, md_text) VALUES(?, ?, ?, NOW(), NOW(), ?, ?)",
     [title, description, user_id, type, md_text],
     (err) => {
-      if (err) throw err;
+      if (err) console.error(err);
       connection.end();
+      console.log("New content!", { title, user_id, type });
       res.send("INSERTED");
     }
   );
@@ -103,8 +111,9 @@ router.post("/modify", authenticateUser, function (req, res) {
     "UPDATE contents SET title=?, description=?, updated=NOW(), type=?, md_text=? WHERE id=?",
     [title, description, type, md_text, id],
     (err) => {
-      if (err) throw err;
+      if (err) console.error(err);
       connection.end();
+      console.log("Change content!", { title, id, type });
       res.send("UPDATED");
     }
   );
@@ -118,8 +127,9 @@ router.post("/delete", authenticateUser, function (req, res) {
   connection.connect();
 
   connection.query(`DELETE FROM contents WHERE id=?`, [id], (err) => {
-    if (err) throw err;
+    if (err) console.error(err);
     connection.end();
+    console.log("Content Deleted! id:", id);
     res.send("Delete Completed");
   });
 });
@@ -140,7 +150,9 @@ router.get("/get_by_author", authenticateUser, function (req, res) {
         "SELECT COUNT(*) AS length FROM contents WHERE user_id=?",
         [user_id],
         (err, contentCnt) => {
+          if (err) console.error(err);
           connection.end();
+          console.log("Filtered by user id -", user_id);
           res.send({
             length: contentCnt[0].length,
             contents,

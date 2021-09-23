@@ -47,7 +47,7 @@ const KAKAO_CLIENT_ID = kakaoClientConfig.KAKAO_CLIENT_ID;
 const KAKAO_CALLBACK_URL = kakaoClientConfig.KAKAO_CALLBACK_URL;
 
 passport.serializeUser((user, done) => {
-  console.log("SERIALIZED", user);
+  console.log("Session Serialize: ", user.displayName);
   done(null, {
     id: user.id,
     identifier: user.identifier,
@@ -56,7 +56,7 @@ passport.serializeUser((user, done) => {
   });
 });
 passport.deserializeUser((user, done) => {
-  console.log("DESERIALIZED", user);
+  console.log("Session Deserialize: ", user.displayName);
   done(null, user);
 });
 /* 
@@ -74,7 +74,7 @@ passport.use(
       callbackURL: GOOGLE_CALLBACK_URL,
     },
     async (token, tokenSecret, profile, done) => {
-      console.log("GOOGLE LOGIN!", profile);
+      console.log("Google Login Successfully", profile);
       try {
         let id = await User.find(profile.provider, profile.id);
         if (!id) {
